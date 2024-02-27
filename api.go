@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type APIServer struct {
@@ -16,12 +17,19 @@ func NewApiServer(addr string, store Store) *APIServer {
 }
 
 func (s *APIServer) Serve() {
-	router := mux.NewRouter()
-	subrouter := router.PathPrefix("/api/v1").Subrouter()
+	subrouter := s.createSubRouter()
 
 	// registering our services
+	tasksService := NewTasksService(s.store)
+	tasksService.RegisterRoutes(subrouter)
 
 	log.Println("Starting the API Server at ", s.addr)
 
 	log.Fatal(http.ListenAndServe(s.addr, subrouter))
+}
+
+func (*APIServer) createSubRouter() *mux.Router {
+	router := mux.NewRouter()
+	subrouter := router.PathPrefix("/api/v1").Subrouter()
+	return subrouter
 }

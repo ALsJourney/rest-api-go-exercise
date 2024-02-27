@@ -1,4 +1,4 @@
-run build:
+run: build  # Make 'run' depend on 'build'
 	@./bin/api
 
 build:
